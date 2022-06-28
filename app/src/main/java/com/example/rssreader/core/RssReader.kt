@@ -1,11 +1,17 @@
 package com.example.rssreader.core
 
+import android.content.Context
 import com.example.rssreader.core.datasource.network.FeedLoader
+import com.example.rssreader.core.datasource.network.FeedParser
 import com.example.rssreader.core.datasource.storage.FeedStorage
 import com.example.rssreader.core.entity.Feed
+import com.russhwolf.settings.AndroidSettings
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.Json
 
 class RssReader internal constructor(
     private val feedLoader: FeedLoader,
@@ -45,5 +51,22 @@ class RssReader internal constructor(
         coroutineScope { map { async { f(it) } }.awaitAll() }
 
     companion object
+}
+
+fun RssReader.Companion.create(ctx: Context, withLog: Boolean) = RssReader(
+    FeedLoader(
+        HttpClient(withLog),
+        FeedParser()
+    ),
+    FeedStorage(
+        AndroidSettings(ctx.getSharedPreferences("rss_reader_pref", Context.MODE_PRIVATE)),
+        Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+            encodeDefaults = false
+        }
+    )
+).also {
+    if (withLog) Napier.base(DebugAntilog())
 }
 

@@ -4,27 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
+import com.example.rssreader.app.FeedSideEffect
+import com.example.rssreader.app.FeedStore
+import com.example.rssreader.composeui.MainScreen
 import com.example.rssreader.ui.theme.RssReaderTheme
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
+import kotlinx.coroutines.flow.filterIsInstance
+import org.koin.android.ext.android.inject
 
-class MainActivity : ComponentActivity() {
+class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             RssReaderTheme {
                 ProvideWindowInsets {
-                    val scaffoldState = rememberScaffoldState()
-                    /*val store: FeedStore by inject()
+                    val store: FeedStore by inject()
                     val scaffoldState = rememberScaffoldState()
                     val error = store.observeSideEffect()
                         .filterIsInstance<FeedSideEffect.Error>()
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
                                 it.error.message.toString()
                             )
                         }
-                    }*/
+                    }
                     Box(
                         Modifier.padding(
                             rememberInsetsPaddingValues(
@@ -61,24 +63,11 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         ) {
-                            // Navigator(MainScreen())
+                            Navigator(MainScreen())
                         }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    RssReaderTheme {
-        Greeting("Android")
     }
 }
